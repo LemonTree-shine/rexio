@@ -29,18 +29,39 @@ class Provider extends React.Component{
     }
 }
 
-var connect = (Wrap)=>{
-    return class extends React.Component{
-        render(){
-            return <ContextTheme.Consumer>
-                {(context)=>{
-                    return <Wrap {...context}/>
-                }}
-            </ContextTheme.Consumer>
+/**
+ * @param dataMap:所要接收的数据
+ * @param deDispath：不需要需要传递dispath
+ */
+var connect = (dataMap,deDispath)=>{
+    return (Wrap)=>{
+        return class extends React.Component{
+            render(){
+                return <ContextTheme.Consumer>
+                    {(context)=>{
+                        var propsContext = {};
+                        if(dataMap&&dataMap.length){
+                            dataMap.forEach((key)=>{
+                                propsContext[key] = context[key];
+                            });
+                            propsContext.$dispatch = context.$dispatch;
+                        }else{
+                            propsContext = context;
+                        }
+                        if(deDispath){
+                            delete propsContext.$dispatch
+                        }
+
+                        return <Wrap $rexioCommonData = {propsContext}/>
+                    }}
+                </ContextTheme.Consumer>
+            }
         }
+        
     }
-    
 }
+
+
 
 module.exports = {
     ContextTheme,
